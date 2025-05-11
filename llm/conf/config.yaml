@@ -1,0 +1,8 @@
+ollama:
+  model: "qwen2.5:14b"
+  base_url: "http://${oc.env:OLLAMA_HOST}:${oc.env:OLLAMA_PORT}"
+mcp:
+  servers:
+    clinical-trials:
+      host: ${oc.env:CLINICAL_TRIALS_MCP_HOST}
+      port: ${oc.env:CLINICAL_TRIALS_MCP_PORT}
