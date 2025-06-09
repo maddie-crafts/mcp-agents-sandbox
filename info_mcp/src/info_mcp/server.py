@@ -5,7 +5,6 @@ from mcp.server import FastMCP
 
 from clinical_trials_agent import (
     get_trials_by_condition,
-    get_trials_by_location,
     get_trials_by_id,
 )
 
@@ -23,7 +22,6 @@ mcp_server = FastMCP(
 
 tools = [
     get_trials_by_condition,
-    get_trials_by_location,
     get_trials_by_id,
 ]
 

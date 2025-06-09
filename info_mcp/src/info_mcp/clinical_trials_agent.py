@@ -3,37 +3,33 @@ from mcp import types
 from typing import List, Optional, Union
 import requests
 
-BASE_URL = "https://clinicaltrials.gov/api/query/study_fields"
+BASE_URL = "https://beta-ut.clinicaltrials.gov/api/v2/studies"
 
 def fetch_trials(
     expr: str,
-    fields: Optional[List[str]] = None,
     max_studies: int = 5
 ) -> types.TextContent:
-    field_str = ",".join(fields) if fields else "NCTId,BriefTitle,Condition"
     params = {
-        "expr": expr,
-        "fields": field_str,
-        "min_rnk": 1,
-        "max_rnk": max_studies,
-        "fmt": "json"
+        "query.titles": expr,
+        "pageSize": max_studies
     }
     response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    return json.dumps(response.json(), indent=2)
+    print(f"Request URL: {response.url}")
+    
+    if response.status_code != 200:
+        raise RuntimeError(f"API call failed with status {response.status_code}: {response.text}")
+    
+    try:
+        return json.dumps(response.json(), indent=2)
+    except requests.exceptions.JSONDecodeError as e:
+        raise RuntimeError(f"Invalid JSON returned from API: {e}")
 
 def get_trials_by_condition(
     condition: str,
     fields: Optional[List[str]] = None
 ) -> types.TextContent:
-    return fetch_trials(condition, fields)
+    return fetch_trials(condition)
 
-def get_trials_by_location(
-    location: str,
-    fields: Optional[List[str]] = None
-) -> types.TextContent:
-    query = f"AREA[{location}]"
-    return fetch_trials(query, fields)
 
 def get_trials_by_id(
     nct_id: Union[str, List[str]],
@@ -43,4 +39,4 @@ def get_trials_by_id(
         expr = " OR ".join(nct_id)
     else:
         expr = nct_id
-    return fetch_trials(expr, fields)
+    return fetch_trials(expr)

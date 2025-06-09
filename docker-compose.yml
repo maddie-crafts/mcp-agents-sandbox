@@ -10,20 +10,12 @@ services:
 
   ollama:
     image: ollama/ollama:latest
-    runtime: nvidia
     env_file:
       - .env.docker
     environment:
       - OLLAMA_MODELS=/.ollama/models
     expose:
       - "11434"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
     volumes:
       - ollama_models:/.ollama
 
@@ -44,8 +36,3 @@ services:
 
 volumes:
   ollama_models:
-    driver: local
-    driver_opts:
-      type: none
-      device: /usr/share/ollama/.ollama
-      o: bind
